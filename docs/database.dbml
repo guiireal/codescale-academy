@@ -1,0 +1,110 @@
+table admins {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(50) [not null]
+  email varchar(50) [not null, unique]
+  password varchar(255) [not null]
+  bio text [null]
+  email_verified_at timestamp [null]
+  avatar varchar(255) [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table roles {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(50) [not null, unique]
+}
+
+table permissions {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(50) [not null, unique]
+}
+
+table role_permission {
+  role_id unsignedBigInteger [not null, ref: > roles.id]
+  permission_id unsignedBigInteger [not null, ref: > permissions.id]
+}
+
+table admin_role {
+  admin_id unsignedBigInteger [not null, ref: > admins.id]
+  role_id unsignedBigInteger [not null, ref: > roles.id]
+}
+
+table students {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(50) [not null]
+  document varchar(20) [not null, unique]
+  birthdate date [null]
+  email varchar(50) [not null, unique]
+  password varchar(255) [not null]
+  bio text [null]
+  email_verified_at timestamp [null]
+  avatar varchar(255) [null]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table courses {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(100) [not null, unique]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table modules {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(100) [not null, unique]
+  course_id unsignedBigInteger [not null, ref: > courses.id]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table lessons {
+  id unsignedBigInteger [pk, not null, increment]
+  name varchar(100) [not null]
+  content text [not null]
+  content_type lesson_content_type [not null, default: "TEXT"]
+  module_id unsignedBigInteger [not null, ref: > modules.id]
+  course_id unsignedBigInteger [not null, ref: > courses.id]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table enrollments {
+  id unsignedBigInteger [pk, not null, increment]
+  enrolled_at timestamp [not null, default: 'NOW()']
+  student_id unsignedBigInteger [not null, ref: > students.id]
+  course_id unsignedBigInteger [not null, ref: > courses.id]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+table enrollment_lesson_completeds {
+  id unsignedBigInteger [pk, not null, increment]
+  completed_at timestamp [not null, default: 'NOW()']
+  enrollment_id unsignedBigInteger [not null, ref: > enrollments.id]
+  student_id unsignedBigInteger [not null, ref: > students.id]
+  course_id unsignedBigInteger [not null, ref: > courses.id]
+  module_id unsignedBigInteger [not null, ref: > modules.id]
+  lesson_id unsignedBigInteger [not null, ref: > lessons.id]
+}
+
+table lesson_comments {
+  id unsignedBigInteger [pk, not null, increment]
+  text text [not null]
+  student_id unsignedBigInteger [null, ref: > students.id]
+  enrollment_id unsignedBigInteger [null, ref: > enrollments.id]
+  admin_id unsignedBigInteger [null, ref: > admins.id]
+  course_id unsignedBigInteger [not null, ref: > courses.id]
+  module_id unsignedBigInteger [not null, ref: > modules.id]
+  lesson_id unsignedBigInteger [not null, ref: > lessons.id]
+  comment_answered_id unsignedBigInteger [null, ref: > lesson_comments.id]
+  created_at timestamp [null]
+  updated_at timestamp [null]
+}
+
+enum lesson_content_type {
+  "TEXT"
+  "VIDEO"
+  "PODCAST"
+}
